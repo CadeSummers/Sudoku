@@ -27,6 +27,7 @@ int board_generation(int board[9][9])
     return board[9][9];
 }
 
+//function to print board to console
 void display_board(int board[9][9])
 {
     cout << "___________________________" << endl;
@@ -49,6 +50,8 @@ void display_board(int board[9][9])
 
     cout << "___________________________" << endl;
 }
+
+//REMOVAL OF INVALID FUNCTIONS
 
 //function to remove all numbers which are invalid by row
 void remove_row_invalids(int board[9][9], int control_list[9])
@@ -90,7 +93,6 @@ void remove_row_invalids(int board[9][9], int control_list[9])
             //if we are at the last index of the row, and after we have checked cell i, j=8
             if (j == 8)
             {
-
                 //reset the numlist to be equal to the control list for the next row
                 for (int k = 0; k < 9; k++)
                 {
@@ -152,6 +154,83 @@ void remove_column_invalids(int board[9][9], int control_list[9])
     }
 }
 
+//remove block (3x3) invalids
+void remove_block_invalids(int board[9][9], int control_list[9])
+{
+    //initialization of numlist to copy control list
+    int numlist[9];
+
+    //for loop to create a number list of 1-9 (control list exists as we are gonna need to copy it a few times)
+    for (int i = 0; i < 9; i++)
+    {
+        numlist[i] = control_list[i];
+    }
+
+    // declaration of ints to keep track of the cells we are working with, relevant further down
+    int i = 0;
+    int j = 0;
+
+    //for each row of 3x3 blocks
+    for (int blockrow = 0; blockrow < 3; blockrow++)
+    {
+        //and each block column index therein (effectivelly each 3x3 block)
+        for (int blockcolumn = 0; blockcolumn < 3; blockcolumn++)
+        {
+            //and for each row within the 3x3 block
+            for (int row = 0; row < 3; row++)
+            {
+                //and for each cell (column index) of the 3 cell row
+                for (int cell = 0; cell < 3; cell++)
+                {   
+
+                    //THIS is how to index all cells properly in this format----> cout << "Row Index: " << row + (blockrow*3) << " Column Index: " << cell + (blockcolumn*3) << endl;
+
+                    //initialize i and j to be equivalent to cell coordinates
+                    i = row + (blockrow*3);
+                    j = cell + (blockcolumn*3);
+
+                    //cout << board[i][j] << endl;
+
+                    //for loop to parse through all values of our numlist
+                    for (int index = 0; index < 9; index++)
+                    {
+
+                        //if we found a match between the number in our block, and the numlist at our index value
+                        if (board[i][j] == numlist[index])
+                        {
+                            //remove that number from the numlist
+                            numlist[index] = 0;
+
+                            //TEST
+                            //cout << "HERE" << endl;
+
+                            //and break out of this loop
+                            break;
+                        }
+
+                        //if we are the final index of the list and still no match has been found
+                        if (index == 8 && (board[i][j] != numlist[index]))
+                        {
+                            //remove the invalid index from the board
+                            board[i][j] = 0;
+                        }
+
+                    }
+                }
+
+                //once we have gone through the 3x3 rows and columns of the list, refresh numlist
+                if (row == 2)
+                {
+                    for (int k = 0; k < 9; k++)
+                    {
+                        numlist[k] = control_list[k];
+                    }
+                }
+            }
+        }
+    }
+}
+
 //function to remove invalid board cells
 int remove_invalids(int board[9][9])
 {
@@ -161,12 +240,14 @@ int remove_invalids(int board[9][9])
 
     remove_row_invalids(board, control_list);
     remove_column_invalids(board, control_list);
-
+    remove_block_invalids(board, control_list);
 
     return board[9][9];
 }
 
-//TODO
+//SOLVING FUNCTIONS
+
+
 //Validates whether or not a line is invalid
 int validate_line(int board[9][9])
 {
@@ -336,7 +417,7 @@ int conceal_spaces(int board[9][9])
 
 //player guesses number
 //TODO
-int player_guess(int guess_num)
+int player_guess(int board[9][9], int guess_num)
 {
     //TODO
     return 0;

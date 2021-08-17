@@ -15,7 +15,7 @@ int main ()
     //cout << validate_line(board) << endl;
     board[9][9] = remove_invalids(board);
     display_board(board);
-
+    validate(board);
     
     return 0;
 }

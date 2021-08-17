@@ -247,8 +247,116 @@ int remove_invalids(int board[9][9])
 
 //SOLVING FUNCTIONS
 
+//validates a row (generally after move, or in backtracking algorithm... which is as of 8/13/21 TODO)
+int validate_row(int board[9][9], int control_list[9])
+{
+    //creation of a list of numbers 1-9
+    int numlist[9];
+
+    //for loop copying control list to numlist
+    for (int i = 0; i < 9; i++)
+    {
+        numlist[i] = control_list[i];
+    }
+
+    //for all rows (i)
+    for (int i = 0; i < 9; i++)
+    {
+        //and all column indices (cells) of rows (j)
+        for (int j = 0; j < 9; j++)
+        {
+            //check all numbers 1-9 of numlist
+            for (int k = 0; k < 9; k++)
+            {
+                //if (when) a number of the control list is found to be in cell j, i
+                if (board[i][j] == numlist[k])
+                {
+                    //remove the number in cell i, j from the number list
+                    numlist[k] = 0;
+
+                    //break out of k loop / numlist loop
+                    break;
+                }
+                
+                //if at the final index of k and still no match has been found
+                if (k == 8 && (board[i][j] != numlist[k]))
+                {
+                    //print notice of invalidity
+                    cout << "Invalid Move" << endl;
+
+                    //return failure
+                    return -1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+//validates a column (generally after move, or in backtracking algorithm... which is as of 8/13/21 TODO)
+int validate_column(int board[9][9], int control_list[9])
+{
+    //creation of a list of numbers 1-9
+    int numlist[9];
+
+    //for loop copying control list to numlist
+    for (int i = 0; i < 9; i++)
+    {
+        numlist[i] = control_list[i];
+    }
+
+    //for all rows (i)
+    for (int i = 0; i < 9; i++)
+    {
+        //and all column indices (cells) of rows (j)
+        for (int j = 0; j < 9; j++)
+        {
+            //check all numbers 1-9 of numlist
+            for (int k = 0; k < 9; k++)
+            {
+                //if (when) a number of the control list is found to be in cell j, i
+                if (board[j][i] == numlist[k])
+                {
+                    //remove the number in cell j, i from the number list
+                    numlist[k] = 0;
+
+                    //break out of k loop / numlist loop
+                    break;
+                }
+                
+                //if at the final index of k and still no match has been found
+                if (k == 8 && (board[j][i] != numlist[k]))
+                {
+                    //print notice of invalidity
+                    cout << "Invalid Move" << endl;
+
+                    //return failure
+                    return -1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+bool validate(int board[9][9])
+{
+
+    //initialization of a control list
+    int control_list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    //validate_row(board, control_list);
+    //validate_column(board);
+    //validate_block(board);
+
+    
+    return false;
+}
 
 //Validates whether or not a line is invalid
+/*
 int validate_line(int board[9][9])
 {
     //initialization of control list (list of valid numbers) we will be making copies of this list and removing any numbers which we cannot use.
@@ -327,9 +435,10 @@ int validate_line(int board[9][9])
     //on invalid return, calls board generation?
     
     return 0;
-}
+}*/
 
 //TODO
+/*
 int validate_block(int val_block[3][3], int *num_list)
 {
     //for loop checking the indices of the control list
@@ -367,7 +476,7 @@ int validate_block(int val_block[3][3], int *num_list)
     }
     
     return 0;
-}
+}*/
 
 //TODO validate board
 void validate_board(int board[9][9])

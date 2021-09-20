@@ -16,14 +16,11 @@ int main ()
     board[9][9] = remove_invalids(board);
     display_board(board);
     validate(board);
+    cout << "iteration 0 (raw/unclean)" << endl;
     display_board(board);
+    cout << "iteration 1 (cleaned 1 time)" << endl;
     clean(board);
     display_board(board);
-    
-    /*while (!validate(board))
-    {
-        board[9][9] = board_generation(board);
-    }*/
 
     return 0;
 }

@@ -452,8 +452,8 @@ int clean(int board[9][9])
             //if the cell is filled
             if (board[i][j] != 0)
             {
-                //run a 1/6 chance to remove the number (just remove enough nums until the board is viable)
-                if (rand() % 5 == 0)
+                //run a 1/3 chance to remove the number (just remove enough nums until the board is viable)
+                if (rand() % 2 == 0)
                 {
                     board[i][j] = 0;
                 }
@@ -530,6 +530,8 @@ bool validate(int board[9][9])
 
 //////////////////
 
+//TODO backtracking needs to be re-structured into a tree-like format, per standard backtracking algorithm implementations
+
 //solves board by backtracking (used to take randomly generated possible sudoku board and check validity)
 //takes as arguments the board, and the indexes we are working with
 int backtrack(int board[9][9], int i, int j)
@@ -555,14 +557,8 @@ int backtrack(int board[9][9], int i, int j)
                     //set the board at i, j to be equal to the k index of numlist
                     board[i][j] = numlist[k];
 
-                    //ensure the board is valid, and if it is not...
-                    if (!validate(board) && (k == 8))
-                    {
-                        //TODO do something
-                        //cout << "Invalid" << endl;
-                        //brute force
-                        //board_generation(board);
-                    }
+
+
                 }
             }
         }

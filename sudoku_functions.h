@@ -51,7 +51,7 @@ void display_board(int board[9][9])
     cout << "___________________________" << endl;
 }
 
-//REMOVAL OF INVALID FUNCTIONS
+//FUNCTIONS FOR THE REMOVAL OF INVALID NUMBERS
 
 //function to remove all numbers which are invalid by row
 void remove_row_invalids(int board[9][9], int control_list[9])
@@ -183,13 +183,9 @@ void remove_block_invalids(int board[9][9], int control_list[9])
                 for (int cell = 0; cell < 3; cell++)
                 {   
 
-                    //THIS is how to index all cells properly in this format----> cout << "Row Index: " << row + (blockrow*3) << " Column Index: " << cell + (blockcolumn*3) << endl;
-
                     //initialize i and j to be equivalent to cell coordinates
                     i = row + (blockrow*3);
                     j = cell + (blockcolumn*3);
-
-                    //cout << board[i][j] << endl;
 
                     //for loop to parse through all values of our numlist
                     for (int index = 0; index < 9; index++)
@@ -200,9 +196,6 @@ void remove_block_invalids(int board[9][9], int control_list[9])
                         {
                             //remove that number from the numlist
                             numlist[index] = 0;
-
-                            //TEST
-                            //cout << "HERE" << endl;
 
                             //and break out of this loop
                             break;
@@ -245,7 +238,13 @@ int remove_invalids(int board[9][9])
     return board[9][9];
 }
 
-//SOLVING FUNCTIONS
+//PLAYER SOLVING FUNCTIONS (functions for the actual game, as opposed to board generation)
+
+//TODO
+//remove "Invalid Move" cout statements on final iteration
+//? change validate functions' subfunctions to return bools rather than ints?
+
+///////////////////////
 
 //validates a row (generally after move, or in backtracking algorithm... which is as of 8/13/21 TODO)
 int validate_row(int board[9][9], int control_list[9])
@@ -281,11 +280,12 @@ int validate_row(int board[9][9], int control_list[9])
                 //if at the final index of k and still no match has been found
                 if (k == 8 && (board[i][j] != numlist[k]))
                 {
-                    //print notice of invalidity
-                    cout << "Invalid Move" << endl;
+                    //print notice of invalidity and location 
+                    cout << "Invalid Row" << endl;
+                    cout << "i: " << i << " j: " << j << endl;
 
                     //return failure
-                    return -1;
+                    //return -1;
                 }
             }
         }
@@ -328,40 +328,26 @@ int validate_column(int board[9][9], int control_list[9])
                 //if at the final index of k and still no match has been found
                 if (k == 8 && (board[j][i] != numlist[k]))
                 {
-                    //print notice of invalidity
-                    cout << "Invalid Move" << endl;
+                    //print notice of invalidity and location
+                    cout << "Invalid Column" << endl;
+                    cout << "i: " << i << " j: " << j << endl;
 
                     //return failure
-                    return -1;
+                    //return -1;
                 }
             }
         }
     }
 
+    //if we reach the end of this program, return success
     return 0;
 }
 
-bool validate(int board[9][9])
+//validate block (3x3)
+//BUGS? If any validation bugs exist, check here for errors. Shouldn't be, but functionality in this piece was copied over from invalidate_blocks, and so prepare for anything missed.
+int validate_block(int board[9][9], int control_list[9])
 {
-
-    //initialization of a control list
-    int control_list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-    //validate_row(board, control_list);
-    //validate_column(board);
-    //validate_block(board);
-
-    
-    return false;
-}
-
-//Validates whether or not a line is invalid
-/*
-int validate_line(int board[9][9])
-{
-    //initialization of control list (list of valid numbers) we will be making copies of this list and removing any numbers which we cannot use.
-    int control_list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
+    //initialization of numlist to copy control list
     int numlist[9];
 
     //for loop to create a number list of 1-9 (control list exists as we are gonna need to copy it a few times)
@@ -370,150 +356,222 @@ int validate_line(int board[9][9])
         numlist[i] = control_list[i];
     }
 
-    //nested for loop to parse through all board cells
-    //for all rows (i)
+    // declaration of ints to keep track of the cells we are working with, relevant further down
+    int i = 0;
+    int j = 0;
+
+    //for each row of 3x3 blocks
+    for (int blockrow = 0; blockrow < 3; blockrow++)
+    {
+        //and each block column index therein (effectivelly each 3x3 block)
+        for (int blockcolumn = 0; blockcolumn < 3; blockcolumn++)
+        {
+            //and for each row within the 3x3 block
+            for (int row = 0; row < 3; row++)
+            {
+                //and for each cell (column index) of the 3 cell row
+                for (int cell = 0; cell < 3; cell++)
+                {   
+
+                    //initialize i and j to be equivalent to cell coordinates
+                    i = row + (blockrow*3);
+                    j = cell + (blockcolumn*3);
+
+                    //for loop to parse through all values of our numlist
+                    for (int index = 0; index < 9; index++)
+                    {
+
+                        //if we found a match between the number in our block, and the numlist at our index value
+                        if (board[i][j] == numlist[index])
+                        {
+                            //remove that number from the numlist
+                            numlist[index] = 0;
+
+                            //and break out of this loop
+                            break;
+                        }
+
+                        //if we are the final index of the list and still no match has been found
+                        if (index == 8 && (board[i][j] != numlist[index]))
+                        {
+                            //print invalidity and location
+                            cout << "Invalid Block" << endl;
+                            cout << "i: " << i << " j: " << j << endl;
+                            
+                            //return failure
+                            //return -1;
+                        }
+
+                    }
+                }
+
+                //once we have gone through the 3x3 rows and columns of the list, refresh numlist
+                if (row == 2)
+                {
+                    for (int k = 0; k < 9; k++)
+                    {
+                        numlist[k] = control_list[k];
+                    }
+                }
+            }
+        }
+    }
+
+    //if we reach the end of this program, return success
+    return 0;
+}
+
+//cleans the board from an invalid board, to a valid one
+//TODO Fix  clean / validate
+int clean(int board[9][9])
+{
+    //print statement
+    cout << "cleaning..." << endl;
+
+    //initialization of numlist to copy control list
+    int numlist[9];
+
+    //initialization of a control list
+    int control_list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    //for loop to create a number list of 1-9 (control list exists as we are gonna need to copy it a few times)
     for (int i = 0; i < 9; i++)
     {
+        numlist[i] = control_list[i];
+    }
 
-        //and for all columns / cell indices of row (j)
+    //initialize random seend
+    srand(time(0));
+
+    //for all rows
+    for (int i = 0; i < 9; i++)
+    {
+        //and for all colum indices therein
         for (int j = 0; j < 9; j++)
         {
-            
-            //for loop to check each cell against our list of numbers
-            for (int k = 0; k < 9; k++)
+            //if the cell is filled
+            if (board[i][j] != 0)
             {
-                //TEST print check on comparison
-                //cout << "comparing: " << board[i][j] << " & " << numlist[k] << endl;
-
-                //if (when) there is a match between the number on the board and the list of numbers
-                if (board[i][j] == numlist[k])
+                //run a 1/6 chance to remove the number (just remove enough nums until the board is viable)
+                if (rand() % 5 == 0)
                 {
-                    //TEST
-                    //cout << "Found " << numlist[k] << "! Index: " << i << j << endl;
-
-                    //remove the number from the numlist... since there can only ever be 1 of each of the 9 digits, if any duplicate arises it will fail this test
-                    numlist[k] = 0;
-
-                    //reset the index of j (return the the next)
-                    j = 0;
+                    board[i][j] = 0;
                 }
+
             }
-
-            //initialization of an integer named index to track the numlist
-            int index = 0;
-
-            //at the final index value of j (once all indices of the row have been checked)
-            if (j == 8)
-            {
-            
-                //run this while loop to ensure that all numbers in numlist are the same (0)
-                while (index < 9)
-                {
-                    //if the number is zero, continue to the next iteration
-                    if (numlist[index] == 0)
-                    {
-                        index++;
-                    }
-                    //if it's not, the line is invalid
-                    else
-                    {
-                        //TEST print statement of invalid line
-                        //cout << "Invalid line found at index " << i << ", " << j << endl;
-
-                        //return the first found invalid number
-                        return numlist[index];
-                    }
-                }
-            }
-
-
         }
     }
 
-    //for loop to check all columns
-
-    //on invalid return, calls board generation?
-    
-    return 0;
-}*/
-
-//TODO
-/*
-int validate_block(int val_block[3][3], int *num_list)
-{
-    //for loop checking the indices of the control list
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-
-            //initialization of index k, to be an index of num_list
-            int k = 0;
-            while (k < 9)
-            {
-                //if the index of val_block at index i, j is the same as the num_list number at k, remove it from the num_list.
-                if (val_block[i][j] == num_list[k])
-                {
-                    //remove the element at index k of num_list and replace it with 0 (an invalid number in this context)
-                    num_list[k] = 0;
-
-                    //leave the loop
-                    break;
-                }
-                
-                //if index k is 8 (final index of list) and no match has been found, the block is invalid and has a duplicate.
-                if (k == 8) 
-                {
-                    cout << "Invalid Block. Try again." << endl;
-                    return -1;
-                }
-                
-                //increment to continue
-                k++;
-            }
-            
-        }
-    }
-    
-    return 0;
-}*/
-
-//TODO validate board
-void validate_board(int board[9][9])
-{
-    //initialization of control list (list of valid numbers) we will be making copies of this list and removing any numbers which we cannot use.
-    int control_list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    
-    //initialization of block (3x3 space in which no digit may be the same) to check for validity, serves as a buffer
-    int val_block[3][3];
-
-    //initialization of line (9 spaces in which no digit may be the same) to check for validity, servers as a buffer
-    int val_line[9];
-
-    //declaration of an int variable to hold the location of the val_block & val_line buffers for each increment of checking loop across the board
-    int stop = 0;
-
-    //initialization of a number list that is a copy of the control list
-    int num_list[9];
-    for (int x = 0; x < 9; x++)
-    {
-        num_list[x] = control_list[x];
-    }
-
-    //TODO validates line by checking that each number 1-9 occurs only once
-
-
-    //validates block by checking that each number 1-9 occurs only once
-    for (int x = stop; x < stop + 3; x++)
-    {
-        for (int y = stop; y < stop + 3; y++)
-        {
-            //initialize each index of valblock to be equivalent to it's position on the board
-            val_block[x][y] = board[x][y];
-        }
-    }
-
+    //return the "cleaned" board
+    return board[9][9];
 }
+
+//validates a board
+bool validate(int board[9][9])
+{
+
+    //initialization of a control list
+    int control_list[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    //initialization of int to hold the sum of validate_row. It will either be zero, -1, -2, or -3, as it sums the value of failed returns.
+    int zero_or_fail = 0;
+
+    //add the return values of validate row, validate column and validate block to zero or fail
+    zero_or_fail += validate_row(board, control_list);
+    zero_or_fail += validate_column(board, control_list);
+    zero_or_fail += validate_block(board, control_list);
+
+    //TODO fix the validate function
+    //everything below here will not run--- the validate_row, column, and block functions will only return zero so the if statement always happens
+    //validate needs to remove all invalids, and then we need to backtrack and attempt to solve (which will work once in a fucking blue moon, and then clean the board until its a valid board)
+
+    //if all three validate columns returned 0
+    if (zero_or_fail == 0)
+    {
+        //return true, indicating program success
+        return true;
+    }
+    
+    //else return failure
+    /*cout << "Failed. Value exceeded 0. Value: " << zero_or_fail << endl;
+    return false;*/
+
+    //if invalid, clean the board
+    board[9][9] = clean(board);
+
+    //and then recursively call board validation
+    validate(board);
+
+    //return false
+    return false;
+}
+
+
+//BACKTRACKING function(s)
+
+//TODO create a condition in backtrack where program recognizes that no possible valid number exists, and terminates the program as a result
+
+
+//Algorithm:
+//for all cells of the board
+//  if a board cell is empty, generate a number for it
+//      and ensure it is valid
+//      if it's valid, 
+//          continue
+//      else
+//         go back to the last certain index
+//          and generate a different a new number for it
+//      if you reach a point at which there are no valid options and you have exhausted all possibilities
+//          return failure
+//      if you have solved the board completely, and...
+//          if the board is valid
+//              return success
+//
+
+//////////////////
+
+//solves board by backtracking (used to take randomly generated possible sudoku board and check validity)
+//takes as arguments the board, and the indexes we are working with
+int backtrack(int board[9][9], int i, int j)
+{
+    //initialization of a numlist of valid sudoku numbers
+    int numlist[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    //initialization of an int to store the last index we were certain about
+    int last_certain_index;
+
+    //for each row
+    for (int i = 0; i < 9; i++)
+    {
+        //and for each column index
+        for (int j = 0; j < 9; j++)
+        {
+            //and for each number of numlist
+            for (int k = 0; k < 9; k++/*no step because we are manually stepping when we find a valid number*/)
+            {
+                //if the board at i, j is empty
+                if (board[i][j] == 0)
+                {
+                    //set the board at i, j to be equal to the k index of numlist
+                    board[i][j] = numlist[k];
+
+                    //ensure the board is valid, and if it is not...
+                    if (!validate(board) && (k == 8))
+                    {
+                        //TODO do something
+                        //cout << "Invalid" << endl;
+                        //brute force
+                        //board_generation(board);
+                    }
+                }
+            }
+        }
+    }
+
+    //return success
+    return 0;
+}
+
 
 //conceals board spaces from valid board
 //TODO
@@ -523,12 +581,18 @@ int conceal_spaces(int board[9][9])
     return 0;
 }
 
-
 //player guesses number
 //TODO
 int player_guess(int board[9][9], int guess_num)
 {
-    //TODO
+    //keep char list of coordinates, defines a list f values. When user types in "A", "A", program will traverse list, and find "A" as 0 index both times, and adjust block 0, 0 accordingly.
+    char coordinate_list[9] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
+
+
+    //TODO changes a number on the board to the guessed number
+    
+    //the validates the number
+    //validate(board)
     return 0;
 }
 

@@ -16,7 +16,15 @@ int main ()
     board[9][9] = remove_invalids(board);
     display_board(board);
     validate(board);
+    display_board(board);
+    clean(board);
+    display_board(board);
     
+    /*while (!validate(board))
+    {
+        board[9][9] = board_generation(board);
+    }*/
+
     return 0;
 }
 

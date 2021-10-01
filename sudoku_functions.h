@@ -285,7 +285,7 @@ int validate_row(int board[9][9], int control_list[9])
                     cout << "i: " << i << " j: " << j << endl;
 
                     //return failure
-                    //return -1;
+                    return -1;
                 }
             }
         }
@@ -333,7 +333,7 @@ int validate_column(int board[9][9], int control_list[9])
                     cout << "i: " << i << " j: " << j << endl;
 
                     //return failure
-                    //return -1;
+                    return -1;
                 }
             }
         }
@@ -399,7 +399,7 @@ int validate_block(int board[9][9], int control_list[9])
                             cout << "i: " << i << " j: " << j << endl;
                             
                             //return failure
-                            //return -1;
+                            return -1;
                         }
 
                     }
@@ -467,6 +467,7 @@ int clean(int board[9][9])
 }
 
 //validates a board
+//!!! NOTE: Validate as a function is only supposed to be used in the backtracking algorithm. For board preparation remove_invalids is sufficient. In layman's terms, don't call this in main, only in the backtracking function  
 bool validate(int board[9][9])
 {
 
@@ -497,10 +498,8 @@ bool validate(int board[9][9])
     return false;*/
 
     //if invalid, clean the board
-    board[9][9] = clean(board);
-
-    //and then recursively call board validation
-    validate(board);
+    //Note: cleaning the board once in board generation or main is sufficient, we can toss out the program otherwise
+    //board[9][9] = clean(board);
 
     //return false
     return false;
@@ -539,8 +538,9 @@ int backtrack(int board[9][9], int i, int j)
     //initialization of a numlist of valid sudoku numbers
     int numlist[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    //initialization of an int to store the last index we were certain about
-    int last_certain_index;
+    //initialization of an int to store the last indeces of i and j we were uncertain about
+    int last_uncertain_i = 0;
+    int last_uncertain_j = 0;
 
     //for each row
     for (int i = 0; i < 9; i++)
@@ -557,6 +557,23 @@ int backtrack(int board[9][9], int i, int j)
                     //set the board at i, j to be equal to the k index of numlist
                     board[i][j] = numlist[k];
 
+                    //set last_uncertain_index to be the values of board i & j
+                    last_uncertain_i = i;
+                    last_uncertain_j = j;
+                    
+                    //if board is not valid
+                    if (!validate)
+                    {
+
+                        //im not sure if the below is valid c++, but
+                        //set the board to the last uncertain index
+                        board[i][j] = last_uncertain_i, last_uncertain_j;
+
+                    }
+                    else
+                    {
+                        k++;
+                    }
 
 
                 }

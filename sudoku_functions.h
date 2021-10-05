@@ -535,54 +535,69 @@ bool validate(int board[9][9])
 //takes as arguments the board, and the indexes we are working with
 int backtrack(int board[9][9], int i, int j)
 {
-    //initialization of a numlist of valid sudoku numbers
-    int numlist[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    //initialization of an int to store the last indeces of i and j we were uncertain about
-    int last_uncertain_i = 0;
-    int last_uncertain_j = 0;
+    //initialization of a control list of valid sudoku numbers, needed for refreshing the numlist
+    int control_list[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    //for each row
+    //declaration of a numlist
+    int numlist[9];
+
+    //declaration of two void ints to be the indeces of the last uncertain number
+    int last_uncertain_i;
+    int last_uncertain_j;
+
+    //which contains the same data as the control list
     for (int i = 0; i < 9; i++)
     {
-        //and for each column index
-        for (int j = 0; j < 9; j++)
-        {
-            //and for each number of numlist
-            for (int k = 0; k < 9; k++/*no step because we are manually stepping when we find a valid number*/)
-            {
-                //if the board at i, j is empty
-                if (board[i][j] == 0)
-                {
-                    //set the board at i, j to be equal to the k index of numlist
-                    board[i][j] = numlist[k];
-
-                    //set last_uncertain_index to be the values of board i & j
-                    last_uncertain_i = i;
-                    last_uncertain_j = j;
-                    
-                    //if board is not valid
-                    if (!validate)
-                    {
-
-                        //im not sure if the below is valid c++, but
-                        //set the board to the last uncertain index
-                        board[i][j] = last_uncertain_i, last_uncertain_j;
-
-                    }
-                    else
-                    {
-                        k++;
-                    }
-
-
-                }
-            }
-        }
+        numlist[i] = control_list[i];
     }
 
-    //return success
-    return 0;
+    //for all rows
+    for (int i = 0; i < 9; i++)
+    {
+        //and all column indices therein
+        for (int j = 0; j < 9; j++)
+        {
+            
+            //if the board at these indices is void
+            if (board[i][j] == 0)
+            {
+                //for all k indicies of the numlist
+                for (int k = 0; k < 9; /*no step we will step manually on invalid board*/)
+                {
+                    //set the board equal to numlist a k index
+                    board[i][j] = numlist[k];
+
+                    //if the board is invalid
+                    if (!validate(board))
+                    {
+                        //increment k and proceed to the next number
+                        k++;
+
+                        //if passed final index of k and the board remains invalid
+                        if (k == 9)
+                        {
+
+                            //return to the last uncertain indices (in a tree like structure, we would return to a given root)
+                            i = last_uncertain_i;
+                            j = last_uncertain_j;
+
+                            //CONSIDER:
+                            //removing the steps of i and j and setting them manually would allows us to reverse-traverse the list if we find an invalid index. If we are 4 cells in and we find a space that is cannot be made valid, we can go back to pre-established cells.
+                            //doing this would let us take the index currently in the filled cell, remove all numbers up to and including it from the numlist, and then try for the remainders. If we try all numbers of that cell and the next cells and there remains invalidity, we go back.
+                            
+
+                        }
+                    }
+
+                    
+                }
+            }
+
+        }
+
+    }
+
 }
 
 
